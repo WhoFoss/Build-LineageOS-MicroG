@@ -531,11 +531,11 @@ rgapps() {
 patch_signature_spoofing
 patch_version_mk; clear
 # install_duckduckgo
-install_fennec
-install_thunderbird
-install_aurorastore
-install_auxio
-install_davx5
+#install_fennec
+#install_thunderbird
+#install_aurorastore
+#install_auxio
+#install_davx5
 gofile_install; clear
 ##################################### FIM DO BLOCO
 
