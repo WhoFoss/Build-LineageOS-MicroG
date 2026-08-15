@@ -280,9 +280,9 @@ install_aurorastore() {
 }
 #####################################
 
-#!/bin/bash
+
 # ============================================================
-# install_auxio.sh - Auxio Music Player Prebuilt Installer
+# Auxio Music Player
 # ============================================================
 # Descricao: Baixa e integra o player de musica Auxio como
 # aplicativo prebuilt no build do Android para o Xiaomi Sapphire
@@ -478,7 +478,7 @@ rgapps() {
 #----------------------------------#
 patch_signature_spoofing
 patch_version_mk; clear
-install_duckduckgo
+#install_duckduckgo
 install_thunderbird
 install_aurorastore
 gofile_install; clear
