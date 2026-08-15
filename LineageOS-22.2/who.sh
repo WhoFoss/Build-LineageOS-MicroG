@@ -223,6 +223,33 @@ EOF
     add_to_device_mk "DuckDuckGo"
 }
 
+install_davx5() {
+    echo -e "${CYAN}Baixando DAVx5 (v4.5.19-ose)...${RESET}"
+
+    local target_dir="device/xiaomi/sapphire/prebuilt/davx5"
+    mkdir -p "$target_dir"
+
+    wget -q --show-progress -O "$target_dir/DAVx5.apk" \
+        "https://f-droid.org/repo/at.bitfire.davdroid_405190003.apk" \
+        || { echo "[ERRO] Falha ao baixar DAVx5.apk"; return 1; }
+
+    cat > "$target_dir/Android.bp" << 'EOF'
+android_app_import {
+    name: "DAVx5",
+    apk: "DAVx5.apk",
+    presigned: true,
+    preprocessed: true,
+    product_specific: true,
+    dex_preopt: {
+        enabled: false,
+    },
+}
+EOF
+
+    print_header "DAVx5 prebuilt baixado para $target_dir"
+    add_to_device_mk "DAVx5"
+}
+
 # Baixa o APK do Thunderbird e gera o Android.bp para importação prebuilt.
 install_thunderbird() {
     echo -e "${CYAN}Cloning Thunderbird prebuilt...${RESET}"
@@ -478,9 +505,11 @@ rgapps() {
 #----------------------------------#
 patch_signature_spoofing
 patch_version_mk; clear
-#install_duckduckgo
+install_duckduckgo
 install_thunderbird
 install_aurorastore
+install_auxio
+install_davx5
 gofile_install; clear
 ##################################### FIM DO BLOCO
 
