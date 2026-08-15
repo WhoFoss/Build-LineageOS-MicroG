@@ -93,11 +93,11 @@ print_header() {
 cleanup_repos() {
     echo -e "${YELLOW}Performing cleanup...${RESET}"
     rm -rf .repo/local_manifests/
-    rm -rf packages/apps/Trebuchet
+    # rm -rf packages/apps/Trebuchet
     rm -rf packages/apps/Updater
-    rm -rf packages/apps/Settings
+    # rm -rf packages/apps/Settings
     rm -rf hardware/qcom-caf/common
-    rm -rf packages/apps/ThemePicker
+    # rm -rf packages/apps/ThemePicker
     rm -rf vendor/lineage
     print_header "Cleanup completed"
 }
@@ -441,10 +441,10 @@ repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --optimiz
 print_header "Repo sync success"
 
 echo -e "${RED}Cloning modified packages...${RESET}"
-clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Settings" "lineage-22.2" "packages/apps/Settings"
+#clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Settings" "lineage-22.2" "packages/apps/Settings"
 clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Updater" "lineage-22.2" "packages/apps/Updater"
-clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_ThemePicker" "lineage-22.2" "packages/apps/ThemePicker"
-clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Trebuchet" "lineage-22.2" "packages/apps/Trebuchet"
+#clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_ThemePicker" "lineage-22.2" "packages/apps/ThemePicker"
+#clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Trebuchet" "lineage-22.2" "packages/apps/Trebuchet"
 clone_repo "https://github.com/sapphire-sm6225/android_vendor_lineage.git" "lineage-22.2" "vendor/lineage"
 print_header "Vendor lineage cloned"
 print_header "Modified packages cloned"
@@ -531,11 +531,11 @@ rgapps() {
 patch_signature_spoofing
 patch_version_mk; clear
 # install_duckduckgo
-#install_fennec
-#install_thunderbird
-#install_aurorastore
-#install_auxio
-#install_davx5
+install_fennec
+install_thunderbird
+install_aurorastore
+install_auxio
+install_davx5
 gofile_install; clear
 ##################################### FIM DO BLOCO
 
@@ -619,4 +619,4 @@ upload(){
     fi
 
     [ -n "$ROM_URL" ] && return 0 || return 1
-}; upload
+}
