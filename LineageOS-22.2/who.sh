@@ -273,6 +273,31 @@ EOF
     add_to_device_mk "Thunderbird"
 }
 
+# Baixa o APK do Fennec (F-Droid) e gera o Android.bp para importação prebuilt.
+install_fennec() {
+    echo -e "${CYAN}Cloning Fennec prebuilt...${RESET}"
+    mkdir -p device/xiaomi/sapphire/prebuilt/fennec
+    wget -q --show-progress -O device/xiaomi/sapphire/prebuilt/fennec/Fennec.apk \
+        "https://f-droid.org/repo/org.mozilla.fennec_fdroid_1530320.apk" \
+        || { echo "[ERRO] Falha ao baixar Fennec.apk"; return 1; }
+
+    cat > device/xiaomi/sapphire/prebuilt/fennec/Android.bp << 'EOF'
+android_app_import {
+    name: "Fennec",
+    apk: "Fennec.apk",
+    presigned: true,
+    preprocessed: true,
+    product_specific: true,
+    dex_preopt: {
+        enabled: false,
+    },
+    overrides: ["Browser2", "Jelly"],
+}
+EOF
+    print_header "Fennec prebuilt cloned to device/xiaomi/sapphire/prebuilt/fennec"
+    add_to_device_mk "Fennec"
+}
+
 #####################################
 install_aurorastore() {
     echo -e "${CYAN}Cloning AuroraStore prebuilt...${RESET}"
@@ -505,7 +530,8 @@ rgapps() {
 #----------------------------------#
 patch_signature_spoofing
 patch_version_mk; clear
-install_duckduckgo
+# install_duckduckgo
+install_fennec
 install_thunderbird
 install_aurorastore
 install_auxio
@@ -593,4 +619,4 @@ upload(){
     fi
 
     [ -n "$ROM_URL" ] && return 0 || return 1
-}
+}; upload
