@@ -302,30 +302,10 @@ EOF
 install_aurorastore() {
     echo -e "${CYAN}Cloning AuroraStore prebuilt...${RESET}"
     rm -rf vendor/aurora
-
-    git clone --depth 1 --filter=blob:none --sparse -b main \
-        https://github.com/WhoFoss/LOSMG.git vendor/aurora \
-        || { echo -e "${RED}[ERROR] Failed to clone${RESET}"; return 1; }
-
-    (cd vendor/aurora && git sparse-checkout set AuroraStore) \
-        || { echo -e "${RED}[ERROR] Sparse-checkout failed${RESET}"; return 1; }
-
-    echo -e "${CYAN}Organizing files...${RESET}"
-    if [ ! -d vendor/aurora/AuroraStore ]; then
-        echo -e "${RED}[ERROR] AuroraStore folder not found in repo${RESET}"
-        return 1
-    fi
-    mv vendor/aurora/AuroraStore/* vendor/aurora/AuroraStore/.[!.]* vendor/aurora/ 2>/dev/null
-    rm -rf vendor/aurora/AuroraStore
-
-    echo -e "${CYAN}Running aurorasetup.sh to download APKs...${RESET}"
-    chmod +x vendor/aurora/aurorasetup.sh
-    ./vendor/aurora/aurorasetup.sh \
-        || { echo -e "${RED}[ERROR] aurorasetup.sh failed${RESET}"; return 1; }
-
+    git clone --depth 1 -b 12L https://github.com/MSe1969/AuroraStore-prebuilt.git vendor/aurora \
+        || { echo "[ERRO] Falha ao clonar AuroraStore-prebuilt"; return 1; }
     rm -rf vendor/aurora/.git
-
-    print_header "AuroraStore prebuilt prepared"
+    print_header "AuroraStore prebuilt cloned to vendor/aurora"
 
     add_to_device_mk "AuroraStore"
     add_to_device_mk "AuroraServices"
