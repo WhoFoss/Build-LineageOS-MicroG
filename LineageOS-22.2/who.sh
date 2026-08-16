@@ -504,7 +504,7 @@ print_header "Build environment ready"
 
 clear
 echo -e "${RED}Starting build...${RESET}"
- brunch sapphire user || error_exit "Brunch failed"
+# brunch sapphire user || error_exit "Brunch failed"
 
 # Localiza o ROM mais recente, gera o SHA256 e envia para o GoFile
 # (usando o script local se existir, com fallback via download remoto).
@@ -573,4 +573,4 @@ upload(){
     fi
 
     [ -n "$ROM_URL" ] && return 0 || return 1
-}; upload
+}
