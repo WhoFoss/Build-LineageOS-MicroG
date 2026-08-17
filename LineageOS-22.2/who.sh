@@ -10,22 +10,6 @@
 # do MicroG, patches (signature spoofing, sufixo de versão), instalação de
 # apps de privacidade, remoção de GApps
 # stock, preparo do ambiente de build e upload da ROM final via GoFile.
-#
-# Dependências:
-#   - git
-#   - repo (Android repo tool)
-#   - wget / curl
-#   - bash >= 4
-#
-# Recursos:
-#   - Limpeza de repositórios antigos (cleanup_repos)
-#   - Clone de device tree, HALs e pacotes modificados
-#   - Manifest local do MicroG
-#   - Patch de Signature Spoofing e sufixo de versão MicroG
-#   - Instalação de apps de privacidade (DuckDuckGo, Thunderbird, AuroraStore)
-#   - Desativação de GApps stock (rgapps)
-#   - Upload automático do ROM via GoFile
-#
 #-------------------------------------------------------------------#
 
 #####################################
@@ -62,7 +46,11 @@ error_exit() {
     exit "$exit_code"
 }
 
+#####################################
+#----------------------------------#
 # Verifica se existe um .repo residual no HOME e aborta caso encontrado.
+#----------------------------------#
+#####################################
 check_repo_valid() {
     local repo_dir="$HOME/.repo"
 
@@ -90,20 +78,22 @@ print_header() {
 }
 
 # Remove diretórios de pacotes/device tree que serão reclonados do zero.
-cleanup_repos() {
+cleanup_repos() 
+{
     echo -e "${YELLOW}Performing cleanup...${RESET}"
     rm -rf .repo/local_manifests/
-    # rm -rf packages/apps/Trebuchet
-    rm -rf packages/apps/Updater
-    # rm -rf packages/apps/Settings
+    #rm -rf packages/apps/Trebuchet #Desativado
+    #rm -rf packages/apps/Updater #Desativado
+    #rm -rf packages/apps/Settings #Desativado
     rm -rf hardware/qcom-caf/common
-    # rm -rf packages/apps/ThemePicker
-    rm -rf vendor/lineage
+    #rm -rf packages/apps/ThemePicker #Desativado
+    #rm -rf vendor/lineage #Desativado
     print_header "Cleanup completed"
 }
 
 # Clona (ou reclona) um repositório git raso em um diretório de destino.
-clone_repo() {
+clone_repo() 
+{
     local repo_url=$1
     local branch=$2
     local dest=$3
@@ -332,13 +322,13 @@ EOF
 
 #####################################
 #----------------------------------#
-# Diretório de trabalho do LineageOS-MicroG
+# Diretório de trabalho do LOSMG
 #----------------------------------#
 #####################################
 
-# Garante que estamos dentro de $HOME/LineageOS-MicroG, criando se preciso.
+# Garante que estamos dentro de $HOME/LOSMG, criando se preciso.
 setup_lineage_dir() {
-    LINEAGE_DIR="LineageOS-MicroG"
+    LINEAGE_DIR="LineageOS-Micr"
     TARGET_DIR="$HOME/$LINEAGE_DIR"
 
     cd_or_exit() {
@@ -369,17 +359,27 @@ setup_lineage_dir() {
 #####################################
 check_repo_valid
 setup_lineage_dir
-cd "$HOME/LineageOS-MicroG" || error_exit "Failed to cd to LineageOS22-MicroG"
+cd "$HOME/LOSMG" || error_exit "Failed to cd to LineageOS22-MicroG"
 
 echo -e "${RED}Starting LineageOS 22.2 build script...${RESET}"
 cleanup_repos
 
+
+# ========================================
+# Repository Initialization
+# Initialize the LineageOS source repository
+# ========================================
 echo -e "${CYAN}Initializing repo...${RESET}"
 repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --depth=1 || error_exit "Repo init failed"
 print_header "Repo init success"
 
 clone_repo "https://github.com/saroj-nokia/local_manifests_sapphire" "sapphire15" ".repo/local_manifests"
 
+
+# ========================================
+# MicroG Manifest
+# Add the LineageOS for microG repository manifest
+# ========================================
 echo -e "${GREEN}Creating MicroG manifest...${RESET}"
 cat > .repo/local_manifests/microg.xml << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -388,13 +388,20 @@ cat > .repo/local_manifests/microg.xml << EOF
     <project path="vendor/partner_gms" name="android_vendor_partner_gms" remote="lineageos4microg" revision="master" />
 </manifest>
 EOF
-print_header "MicroG manifest created"
+print_header "MicroG manifest created" && clear
 
-clear
+# ========================================
+# Repository Synchronization
+# Download and synchronize the complete source tree
+# ========================================
 echo -e "${RED}Syncing full repo...${RESET}"
 repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune || error_exit "Repo sync failed"
 print_header "Repo sync success"
 
+# ========================================
+# Modified Packages
+# Clone custom packages and vendor repositories
+# ========================================
 echo -e "${RED}Cloning modified packages...${RESET}"
 #clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Settings" "lineage-22.2" "packages/apps/Settings"
 clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Updater" "lineage-22.2" "packages/apps/Updater"
@@ -402,8 +409,12 @@ clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Updater" "l
 #clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Trebuchet" "lineage-22.2" "packages/apps/Trebuchet"
 clone_repo "https://github.com/sapphire-sm6225/android_vendor_lineage.git" "lineage-22.2" "vendor/lineage"
 print_header "Vendor lineage cloned"
-print_header "Modified packages cloned"
-echo && clear
+print_header "Modified packages cloned" && clear
+
+# ========================================
+# Qualcomm HALs
+# Clone the required SM6225 hardware components
+# ========================================
 echo -e "${RED}Cloning HALs for SM6225...${RESET}"
 clone_hal "https://github.com/sapphire-sm6225/android_hardware_qcom-caf_common.git" "hardware/qcom-caf/common" "lineage-22.2"
 clone_hal "https://github.com/sapphire-sm6225/vendor_qcom_opensource_agm.git" "hardware/qcom-caf/sm6225/audio/agm" "lineage-22.2-caf-sm6225"
@@ -414,16 +425,15 @@ clone_hal "https://github.com/sapphire-sm6225/hardware_qcom_display.git" "hardwa
 clone_hal "https://github.com/sapphire-sm6225/hardware_qcom_media.git" "hardware/qcom-caf/sm6225/media" "lineage-22.0-caf-sm6225"
 clone_hal "https://github.com/sapphire-sm6225/hardware_qcom_audio.git" "hardware/qcom-caf/sm6225/audio/primary-hal" "lineage-22.0-caf-sm6225"
 clone_hal "https://github.com/sapphire-sm6225/device_qcom_sepolicy_vndr.git" "device/qcom/sepolicy_vndr/sm6225" "lineage-22.0-caf-sm6225"
-print_header "HALs cloned"
-clear
+print_header "HALs cloned" && clear
 
 # Instala o script de upload do GoFile e cria o alias "gofile" no bashrc.
 gofile_install(){
 echo -e "${CYAN}Installing gofile upload tool...${RESET}"
 wget -q https://raw.githubusercontent.com/kenway214/GoFile-Upload-Script/master/upload.sh \
-    -O ~/LineageOS-MicroG/gofile && chmod +x ~/LineageOS-MicroG/gofile
+    -O ~/LOSMG/gofile && chmod +x ~/LOSMG/gofile
 if ! grep -q 'alias gofile' ~/.bashrc; then
-    echo 'alias gofile="~/LineageOS-MicroG/gofile"' >> ~/.bashrc
+    echo 'alias gofile="~/LOSMG/gofile"' >> ~/.bashrc
 fi
 source ~/.bashrc 2>/dev/null || true
  print_header "gofile installed"
@@ -481,7 +491,7 @@ rgapps() {
 
 #####################################
 #----------------------------------#
-# Patches e Apps Extras
+# Coisas que voce não precisa saber
 #----------------------------------#
 patch_signature_spoofing
 patch_version_mk; clear
@@ -491,27 +501,37 @@ install_aurorastore
 install_auxio
 install_davx5
 gofile_install; clear
-##################################### FIM DO BLOCO
 
-echo -e "${CYAN}Setting up build environment...${RESET}"
+
+# ========================================
+# Build Environment Setup
+# ========================================
+echo -e "${RED}Setting up build environment...${RESET}"
 source build/envsetup.sh
 export BUILD_USERNAME=WhoFoss
 export BUILD_HOSTNAME=los22
 export SKIP_ABI_CHECKS=true
 export WITH_GMS=true
 mkdir -p out/target/product/sapphire/obj/KERNEL_OBJ/usr
-print_header "Build environment ready"
+print_header "Build environment ready"; clear
 
-clear
+# ========================================
+# Build
+# Start ROM compilation
+# ========================================
 echo -e "${RED}Starting build...${RESET}"
 # brunch sapphire user || error_exit "Brunch failed"
 
+# ========================================
+# ROM Upload to GoFile
+# Find, checksum, and upload the latest ROM
+# ========================================
 # Localiza o ROM mais recente, gera o SHA256 e envia para o GoFile
 # (usando o script local se existir, com fallback via download remoto).
 upload(){
     # Upload ROM to GoFile
     BUILD_DIR="out/target/product/sapphire"
-    GOFILE_SCRIPT="${HOME}/LineageOS-MicroG/gofile"
+    GOFILE_SCRIPT="${HOME}/LOSMG/gofile"
     ROM_URL=""
     ROM_SHA256=""
     ROM_SIZE=""
