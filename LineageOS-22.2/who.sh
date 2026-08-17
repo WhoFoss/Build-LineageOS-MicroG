@@ -66,12 +66,17 @@ check_repo_valid() {
 }
 
 # Imprime um cabeçalho colorido com borda ao redor da mensagem.
-print_header() {
+print_header() 
+{
     local message="$1"
     local border_char="${2:-=}"
     local color="${3:-$GREEN}"
-    local length=${#message}
-    local border=$(printf "%${length}s" | tr " " "$border_char")
+    
+    # Remove cores caso a mensagem já tenha
+    message=$(echo -e "$message" | sed 's/\x1b\[[0-9;]*m//g')
+    
+    local border=$(printf "%${#message}s" | tr " " "$border_char")
+    
     echo -e "${color}${border}${RESET}"
     echo -e "${color}${message}${RESET}"
     echo -e "${color}${border}${RESET}"
@@ -104,7 +109,7 @@ clone_repo()
 
     git clone --depth 1 -b "$branch" "$repo_url" "$dest" || error_exit "Failed to clone $dest"
 
-    print_header "$dest clone success"
+    print_header "${dest} clone success" "#" "$YELLOW"
 }
 
 # Clona um repositório de HAL, sobrescrevendo o path caso já exista.
