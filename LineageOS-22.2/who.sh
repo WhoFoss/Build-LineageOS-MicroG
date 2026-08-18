@@ -113,7 +113,8 @@ clone_repo()
 }
 
 # Clona um repositório de HAL, sobrescrevendo o path caso já exista.
-clone_hal() {
+clone_hal() 
+{
     local url=$1
     local path=$2
     local branch=$3
@@ -122,7 +123,8 @@ clone_hal() {
 }
 
 # Adiciona um pacote em PRODUCT_PACKAGES do device.mk, de forma idempotente.
-add_to_device_mk() {
+add_to_device_mk() 
+{
     local package=$1
     local device_mk="device/xiaomi/sapphire/device.mk"
 
@@ -159,7 +161,8 @@ patch_signature_spoofing() {
 }
 
 # Adiciona sufixo -MicroG/-BUILD_TAG ao version.mk do vendor/lineage.
-patch_version_mk() {
+patch_version_mk() 
+{
     local version_mk="vendor/lineage/config/version.mk"
 
     if [ ! -f "$version_mk" ]; then
@@ -194,8 +197,9 @@ endif' "$version_mk"
 }
 
 # Baixa o APK do DuckDuckGo e gera o Android.bp para importação prebuilt.
-install_duckduckgo() {
-    echo -e "${CYAN}Cloning DuckDuckGo prebuilt...${RESET}"
+install_duckduckgo() 
+{
+    echo -e "${YELLOW}Cloning DuckDuckGo prebuilt...${RESET}"
     mkdir -p device/xiaomi/sapphire/prebuilt/duckduckgo
     wget -q --show-progress -O device/xiaomi/sapphire/prebuilt/duckduckgo/DuckDuckGo.apk \
         "https://f-droid.org/repo/com.duckduckgo.mobile.android_52850000.apk" \
@@ -218,8 +222,9 @@ EOF
     add_to_device_mk "DuckDuckGo"
 }
 
-install_davx5() {
-    echo -e "${CYAN}Baixando DAVx5 (v4.5.19-ose)...${RESET}"
+install_davx5() 
+{
+    echo -e "${YELLOW}Baixando DAVx5 (v4.5.19-ose)...${RESET}"
 
     local target_dir="device/xiaomi/sapphire/prebuilt/davx5"
     mkdir -p "$target_dir"
@@ -246,8 +251,9 @@ EOF
 }
 
 # Baixa o APK do Thunderbird e gera o Android.bp para importação prebuilt.
-install_thunderbird() {
-    echo -e "${CYAN}Cloning Thunderbird prebuilt...${RESET}"
+install_thunderbird() 
+{
+    echo -e "${YELLOW}Cloning Thunderbird prebuilt...${RESET}"
     mkdir -p device/xiaomi/sapphire/prebuilt/thunderbird
     wget -q --show-progress -O device/xiaomi/sapphire/prebuilt/thunderbird/Thunderbird.apk \
         "https://f-droid.org/repo/net.thunderbird.android_23.apk" \
@@ -269,8 +275,9 @@ EOF
 }
 
 #####################################
-install_aurorastore() {
-    echo -e "${CYAN}Cloning AuroraStore prebuilt...${RESET}"
+install_aurorastore() 
+{
+    echo -e "${YELLOW}Cloning AuroraStore prebuilt...${RESET}"
     rm -rf vendor/aurora
     git clone --depth 1 -b 12L https://github.com/MSe1969/AuroraStore-prebuilt.git vendor/aurora \
         || { echo "[ERRO] Falha ao clonar AuroraStore-prebuilt"; return 1; }
@@ -299,7 +306,8 @@ install_aurorastore() {
 # Fonte: https://f-droid.org/packages/org.oxycblt.auxio/
 # ============================================================
 
-install_auxio() {
+install_auxio() 
+{
     mkdir -p device/xiaomi/sapphire/prebuilt/auxio
     
     wget -q --show-progress -O device/xiaomi/sapphire/prebuilt/auxio/Auxio.apk \
@@ -332,7 +340,8 @@ EOF
 #####################################
 
 # Garante que estamos dentro de $HOME/LOSMG, criando se preciso.
-setup_lineage_dir() {
+setup_lineage_dir() 
+{
     LINEAGE_DIR="LineageOS-Micr"
     TARGET_DIR="$HOME/$LINEAGE_DIR"
 
@@ -366,7 +375,7 @@ check_repo_valid
 setup_lineage_dir
 cd "$HOME/LOSMG" || error_exit "Failed to cd to LineageOS22-MicroG"
 
-echo -e "${RED}Starting LineageOS 22.2 build script...${RESET}"
+echo -e "${YELLOW}Starting LineageOS 22.2 build script...${RESET}"
 cleanup_repos
 
 
@@ -374,7 +383,7 @@ cleanup_repos
 # Repository Initialization
 # Initialize the LineageOS source repository
 # ========================================
-echo -e "${CYAN}Initializing repo...${RESET}"
+echo -e "${YELLOW}Initializing repo...${RESET}"
 repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --depth=1 || error_exit "Repo init failed"
 print_header "Repo init success"
 
@@ -385,7 +394,7 @@ clone_repo "https://github.com/saroj-nokia/local_manifests_sapphire" "sapphire15
 # MicroG Manifest
 # Add the LineageOS for microG repository manifest
 # ========================================
-echo -e "${GREEN}Creating MicroG manifest...${RESET}"
+echo -e "${YELLOW}Creating MicroG manifest...${RESET}"
 cat > .repo/local_manifests/microg.xml << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -399,7 +408,7 @@ print_header "MicroG manifest created" && clear
 # Repository Synchronization
 # Download and synchronize the complete source tree
 # ========================================
-echo -e "${RED}Syncing full repo...${RESET}"
+echo -e "${YELLOW}Syncing full repo...${RESET}"
 repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune || error_exit "Repo sync failed"
 print_header "Repo sync success"
 
@@ -407,14 +416,18 @@ print_header "Repo sync success"
 # Modified Packages
 # Clone custom packages and vendor repositories
 # ========================================
-echo -e "${RED}Cloning modified packages...${RESET}"
-#clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Settings" "lineage-22.2" "packages/apps/Settings"
+clone_modified_packages()
+{
+############## Função desabilitada
+echo -e "${YELLOW}Cloning modified packages...${RESET}"
+clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Settings" "lineage-22.2" "packages/apps/Settings"
 clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Updater" "lineage-22.2" "packages/apps/Updater"
-#clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_ThemePicker" "lineage-22.2" "packages/apps/ThemePicker"
-#clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Trebuchet" "lineage-22.2" "packages/apps/Trebuchet"
+clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_ThemePicker" "lineage-22.2" "packages/apps/ThemePicker"
+clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Trebuchet" "lineage-22.2" "packages/apps/Trebuchet"
 clone_repo "https://github.com/sapphire-sm6225/android_vendor_lineage.git" "lineage-22.2" "vendor/lineage"
 print_header "Vendor lineage cloned"
 print_header "Modified packages cloned" && clear
+}
 
 # ========================================
 # Qualcomm HALs
@@ -433,8 +446,9 @@ clone_hal "https://github.com/sapphire-sm6225/device_qcom_sepolicy_vndr.git" "de
 print_header "HALs cloned" && clear
 
 # Instala o script de upload do GoFile e cria o alias "gofile" no bashrc.
-gofile_install(){
-echo -e "${CYAN}Installing gofile upload tool...${RESET}"
+gofile_install()
+{
+echo -e "${YELLOW}Installing gofile upload tool...${RESET}"
 wget -q https://raw.githubusercontent.com/kenway214/GoFile-Upload-Script/master/upload.sh \
     -O ~/LOSMG/gofile && chmod +x ~/LOSMG/gofile
 if ! grep -q 'alias gofile' ~/.bashrc; then
@@ -446,7 +460,8 @@ source ~/.bashrc 2>/dev/null || true
 
 # Desativa GApps stock no lineage_sapphire.mk: comenta o include do gms.mk
 # e derruba as flags do bloco "Gapps config" para false.
-rgapps() {
+rgapps() 
+{
     local MK_FILE="device/xiaomi/sapphire/lineage_sapphire.mk"
 
     if [ ! -f "$MK_FILE" ]; then
@@ -524,8 +539,8 @@ print_header "Build environment ready"; clear
 # Build
 # Start ROM compilation
 # ========================================
-echo -e "${RED}Starting build...${RESET}"
-# brunch sapphire user || error_exit "Brunch failed"
+echo -e "${YELLOW}Starting build...${RESET}"
+ brunch sapphire user || error_exit "Brunch failed"
 
 # ========================================
 # ROM Upload to GoFile
@@ -598,4 +613,4 @@ upload(){
     fi
 
     [ -n "$ROM_URL" ] && return 0 || return 1
-}
+}; upload
