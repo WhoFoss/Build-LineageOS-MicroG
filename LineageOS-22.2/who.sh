@@ -274,20 +274,23 @@ EOF
     add_to_device_mk "Thunderbird"
 }
 
-#####################################
+##################################################
+# install_aurorastore - Clona e configura AuroraStore
+##################################################
 install_aurorastore() 
 {
-    echo -e "${YELLOW}Cloning AuroraStore prebuilt...${RESET}"
+    print_header "Cloning AuroraStore prebuilt..." "$YELLOW"
+    
     rm -rf vendor/aurora
     git clone --depth 1 -b 12L https://github.com/MSe1969/AuroraStore-prebuilt.git vendor/aurora \
-        || { echo "[ERRO] Falha ao clonar AuroraStore-prebuilt"; return 1; }
+        || { echo -e "${RED}[ERRO] Falha ao clonar AuroraStore-prebuilt${RESET}"; return 1; }
+    
     rm -rf vendor/aurora/.git
-    print_header "AuroraStore prebuilt cloned to vendor/aurora"
+    print_header "AuroraStore prebuilt cloned to vendor/aurora" "=" "$GREEN"
 
     add_to_device_mk "AuroraStore"
     add_to_device_mk "AuroraServices"
 }
-#####################################
 
 
 # ============================================================
@@ -340,8 +343,7 @@ EOF
 #####################################
 
 # Garante que estamos dentro de $HOME/LOSMG, criando se preciso.
-setup_lineage_dir() 
-{
+setup_lineage_dir() {
     LINEAGE_DIR="LOSMG"
     TARGET_DIR="$HOME/$LINEAGE_DIR"
 
@@ -349,20 +351,21 @@ setup_lineage_dir()
         cd "$1" || error_exit "Failed to cd to $1"
     }
 
-    if [ "$(basename "$PWD")" != "$LINEAGE_DIR" ]; then
-        echo -e "${CYAN}Not in $LINEAGE_DIR directory. Checking/Creating...${RESET}"
+    [ "$(basename "$PWD")" = "$LINEAGE_DIR" ] && {
+        print_header "Already in $LINEAGE_DIR" "=" "$GREEN"
+        return
+    }
 
-        if [ -d "$TARGET_DIR" ]; then
-            cd_or_exit "$TARGET_DIR"
-            echo -e "${GREEN}Changed to existing directory: $PWD${RESET}"
-        else
-            echo -e "${YELLOW}Creating $TARGET_DIR...${RESET}"
-            mkdir -p "$TARGET_DIR" || error_exit "Failed to create $TARGET_DIR"
-            cd_or_exit "$TARGET_DIR"
-            echo -e "${GREEN}Created and changed to: $PWD${RESET}"
-        fi
+    print_header "Setting up $LINEAGE_DIR..." "=" "$CYAN"
+    
+    if [ -d "$TARGET_DIR" ]; then
+        cd_or_exit "$TARGET_DIR"
+        print_header "Changed to: $PWD" "=" "$GREEN"
     else
-        echo -e "${GREEN}Already in $LINEAGE_DIR directory: $PWD${RESET}"
+        print_header "Creating $TARGET_DIR..." "=" "$YELLOW"
+        mkdir -p "$TARGET_DIR" || error_exit "Failed to create"
+        cd_or_exit "$TARGET_DIR"
+        print_header "Created: $PWD" "=" "$GREEN"
     fi
 }
 
