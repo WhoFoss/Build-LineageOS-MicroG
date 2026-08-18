@@ -196,7 +196,17 @@ endif' "$version_mk"
     fi
 }
 
-# Baixa o APK do Titanium Browser (fork Vanadium/GrapheneOS) e gera o Android.bp para importação prebuilt.
+##################################################
+# Titanium Browser Prebuilt
+# --------------------------------------------------
+# Base: Vanadium (GrapheneOS)
+# Fork: https://github.com/jqssun/android-titanium-browser
+# Versão: v152.0.7977.42
+# Licença: GPL-2.0
+# --------------------------------------------------
+# Baixa APK e gera Android.bp para importação prebuilt
+# Substitui: Browser2, Jelly
+##################################################
 install_titanium() {
     echo -e "${CYAN}Cloning Titanium Browser prebuilt...${RESET}"
     mkdir -p device/xiaomi/sapphire/prebuilt/titanium
