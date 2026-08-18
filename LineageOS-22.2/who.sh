@@ -342,7 +342,7 @@ EOF
 # Garante que estamos dentro de $HOME/LOSMG, criando se preciso.
 setup_lineage_dir() 
 {
-    LINEAGE_DIR="LineageOS-Micr"
+    LINEAGE_DIR="LOSMG"
     TARGET_DIR="$HOME/$LINEAGE_DIR"
 
     cd_or_exit() {
