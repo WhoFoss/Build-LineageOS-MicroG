@@ -196,19 +196,18 @@ endif' "$version_mk"
     fi
 }
 
-# Baixa o APK do DuckDuckGo e gera o Android.bp para importação prebuilt.
-install_duckduckgo() 
-{
-    echo -e "${YELLOW}Cloning DuckDuckGo prebuilt...${RESET}"
-    mkdir -p device/xiaomi/sapphire/prebuilt/duckduckgo
-    wget -q --show-progress -O device/xiaomi/sapphire/prebuilt/duckduckgo/DuckDuckGo.apk \
-        "https://f-droid.org/repo/com.duckduckgo.mobile.android_52850000.apk" \
-        || { echo "[ERRO] Falha ao baixar DuckDuckGo.apk"; return 1; }
+# Baixa o APK do Titanium Browser (fork Vanadium/GrapheneOS) e gera o Android.bp para importação prebuilt.
+install_titanium() {
+    echo -e "${CYAN}Cloning Titanium Browser prebuilt...${RESET}"
+    mkdir -p device/xiaomi/sapphire/prebuilt/titanium
+    wget -q --show-progress -O device/xiaomi/sapphire/prebuilt/titanium/Titanium.apk \
+        "https://github.com/jqssun/android-titanium-browser/releases/download/v152.0.7977.42/152.0.7977.42-1786928933-arm64-v8a.apk" \
+        || { echo "[ERRO] Falha ao baixar Titanium.apk"; return 1; }
 
-    cat > device/xiaomi/sapphire/prebuilt/duckduckgo/Android.bp << 'EOF'
+    cat > device/xiaomi/sapphire/prebuilt/titanium/Android.bp << 'EOF'
 android_app_import {
-    name: "DuckDuckGo",
-    apk: "DuckDuckGo.apk",
+    name: "Titanium",
+    apk: "Titanium.apk",
     presigned: true,
     preprocessed: true,
     product_specific: true,
@@ -218,8 +217,8 @@ android_app_import {
     overrides: ["Browser2", "Jelly"],
 }
 EOF
-    print_header "DuckDuckGo prebuilt cloned to device/xiaomi/sapphire/prebuilt/duckduckgo"
-    add_to_device_mk "DuckDuckGo"
+    print_header "Titanium Browser prebuilt cloned to device/xiaomi/sapphire/prebuilt/titanium"
+    add_to_device_mk "Titanium"
 }
 
 install_davx5() 
@@ -518,7 +517,7 @@ rgapps()
 #----------------------------------#
 patch_signature_spoofing
 patch_version_mk; clear
-install_duckduckgo
+install_titanium
 install_thunderbird
 install_aurorastore
 install_auxio
