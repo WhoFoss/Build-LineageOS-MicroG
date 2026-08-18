@@ -1,8 +1,6 @@
 ### ATENÇÃO
 
 > Este script é de uso ESTRITAMENTE PESSOAL.
-Foi desenvolvido sob medida para o meu dispositivo e configurações específicas.
-
 > NÃO ME RESPONSABILIZO por quaisquer danos, perda de dados,
 brick ou mau funcionamento que possam ocorrer em seu dispositivo.
 
