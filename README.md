@@ -1,11 +1,3 @@
-### ATENÇÃO
-
-> Este script é de uso ESTRITAMENTE PESSOAL.
-> NÃO ME RESPONSABILIZO por quaisquer danos, perda de dados,
-brick ou mau funcionamento que possam ocorrer em seu dispositivo.
-
-*USE POR SUA CONTA E RISCO!*
----
 ### Script automatizado
 ```
 curl -fsSL https://raw.githubusercontent.com/WhoFoss/LOSMG/refs/heads/main/LineageOS-22.2/who.sh | bash
