@@ -15,4 +15,4 @@ curl -s https://raw.githubusercontent.com/saroj-nokia/GoFile-Upload/refs/heads/m
 
 <summary>Versão mais recente disponível: </summary>
 <br/>
-<a href="[https://sourceforge.net/projects/whofoss/files/sapphire/LineageOS-23.2/MicroG/](https://sourceforge.net/projects/whofoss/files/sapphire/LineageOS-22.2/MicroG/)"><img src="https://img.shields.io/badge/Download-191724?style=for-the-badge&logo=lineageos&logoColor=white"/></a><a href="https://microg.org/">
+<a href="https://sourceforge.net/projects/whofoss/files/sapphire/LineageOS-23.2/MicroG/"><img src="https://img.shields.io/badge/Download-191724?style=for-the-badge&logo=lineageos&logoColor=white"/></a><a href="https://microg.org/">
