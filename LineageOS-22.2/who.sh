@@ -530,7 +530,7 @@ patch_version_mk; clear
 install_titanium
 install_thunderbird
 install_aurorastore
-install_davx5
+# install_davx5
 gofile_install; clear
 
 
