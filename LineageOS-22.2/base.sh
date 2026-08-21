@@ -10,23 +10,6 @@
 # do MicroG, patches (signature spoofing, sufixo de versão), instalação de
 # apps de privacidade, integração do ViPER4AndroidFX, remoção de GApps
 # stock, preparo do ambiente de build e upload do ROM final via GoFile.
-#
-# Dependências:
-#   - git
-#   - repo (Android repo tool)
-#   - wget / curl
-#   - bash >= 4
-#
-# Recursos:
-#   - Limpeza de repositórios antigos (cleanup_repos)
-#   - Clone de device tree, HALs e pacotes modificados
-#   - Manifest local do MicroG
-#   - Patch de Signature Spoofing e sufixo de versão MicroG
-#   - Instalação de apps de privacidade (DuckDuckGo, Thunderbird, AuroraStore)
-#   - Integração do ViPER4AndroidFX
-#   - Desativação de GApps stock (rgapps)
-#   - Upload automático do ROM via GoFile
-#
 #-------------------------------------------------------------------#
 
 #####################################
@@ -94,13 +77,13 @@ print_header() {
 cleanup_repos() {
     echo -e "${YELLOW}Performing cleanup...${RESET}"
     rm -rf .repo/local_manifests/
-    rm -rf packages/apps/Trebuchet
-    rm -rf packages/apps/Updater
-    rm -rf packages/apps/Settings
     rm -rf hardware/qcom-caf/common
-    rm -rf packages/apps/ThemePicker
-    rm -rf vendor/lineage
-  # rm -rf frameworks/base
+    #rm -rf packages/apps/Trebuchet #Desativado
+    #rm -rf packages/apps/Updater #Desativado
+    #rm -rf packages/apps/Settings #Desativado
+    #rm -rf packages/apps/ThemePicker #Desativado
+    #rm -rf vendor/lineage #Desativado
+    #rm -rf frameworks/base
     print_header "Cleanup completed"
 }
 
@@ -200,18 +183,28 @@ endif' "$version_mk"
     fi
 }
 
-# Baixa o APK do DuckDuckGo e gera o Android.bp para importação prebuilt.
-install_duckduckgo() {
-    echo -e "${CYAN}Cloning DuckDuckGo prebuilt...${RESET}"
-    mkdir -p device/xiaomi/sapphire/prebuilt/duckduckgo
-    wget -q --show-progress -O device/xiaomi/sapphire/prebuilt/duckduckgo/DuckDuckGo.apk \
-        "https://f-droid.org/repo/com.duckduckgo.mobile.android_52850000.apk" \
-        || { echo "[ERRO] Falha ao baixar DuckDuckGo.apk"; return 1; }
+##################################################
+# Titanium Browser Prebuilt
+# --------------------------------------------------
+# Base: Vanadium (GrapheneOS)
+# Fork: https://github.com/jqssun/android-titanium-browser
+# Versão: v152.0.7977.42
+# Licença: GPL-2.0
+# --------------------------------------------------
+# Baixa APK e gera Android.bp para importação prebuilt
+# Substitui: Browser2, Jelly
+##################################################
+install_titanium() {
+    echo -e "${CYAN}Cloning Titanium Browser prebuilt...${RESET}"
+    mkdir -p device/xiaomi/sapphire/prebuilt/titanium
+    wget -q --show-progress -O device/xiaomi/sapphire/prebuilt/titanium/Titanium.apk \
+        "https://github.com/jqssun/android-titanium-browser/releases/download/v152.0.7977.42/152.0.7977.42-1786928933-arm64-v8a.apk" \
+        || { echo "[ERRO] Falha ao baixar Titanium.apk"; return 1; }
 
-    cat > device/xiaomi/sapphire/prebuilt/duckduckgo/Android.bp << 'EOF'
+    cat > device/xiaomi/sapphire/prebuilt/titanium/Android.bp << 'EOF'
 android_app_import {
-    name: "DuckDuckGo",
-    apk: "DuckDuckGo.apk",
+    name: "Titanium",
+    apk: "Titanium.apk",
     presigned: true,
     preprocessed: true,
     product_specific: true,
@@ -221,8 +214,8 @@ android_app_import {
     overrides: ["Browser2", "Jelly"],
 }
 EOF
-    print_header "DuckDuckGo prebuilt cloned to device/xiaomi/sapphire/prebuilt/duckduckgo"
-    add_to_device_mk "DuckDuckGo"
+    print_header "Titanium Browser prebuilt cloned to device/xiaomi/sapphire/prebuilt/titanium"
+    add_to_device_mk "Titanium"
 }
 
 # Baixa o APK do Thunderbird e gera o Android.bp para importação prebuilt.
@@ -248,6 +241,78 @@ EOF
     add_to_device_mk "Thunderbird"
 }
 
+install_davx5() 
+{
+    echo -e "${YELLOW}Baixando DAVx5 (v4.5.19-ose)...${RESET}"
+
+    local target_dir="device/xiaomi/sapphire/prebuilt/davx5"
+    mkdir -p "$target_dir"
+
+    wget -q --show-progress -O "$target_dir/DAVx5.apk" \
+        "https://f-droid.org/repo/at.bitfire.davdroid_405190003.apk" \
+        || { echo "[ERRO] Falha ao baixar DAVx5.apk"; return 1; }
+
+    cat > "$target_dir/Android.bp" << 'EOF'
+android_app_import {
+    name: "DAVx5",
+    apk: "DAVx5.apk",
+    presigned: true,
+    preprocessed: true,
+    product_specific: true,
+    dex_preopt: {
+        enabled: false,
+    },
+}
+EOF
+
+    print_header "DAVx5 prebuilt baixado para $target_dir"
+    add_to_device_mk "DAVx5"
+}
+
+# ============================================================
+# Auxio Music Player
+# ============================================================
+# Descricao: Baixa e integra o player de musica Auxio como
+# aplicativo prebuilt no build do Android para o Xiaomi Sapphire
+#
+# Caracteristicas:
+#   - Player minimalista e open-source (F-Droid)
+#   - Interface moderna baseada em Material You
+#   - Suporte a tags e albuns com alta performance
+#   - Sem dependencias do Google Services
+#
+# Site oficial: https://auxio.app/
+# Fonte: https://f-droid.org/packages/org.oxycblt.auxio/
+# ============================================================
+
+install_auxio() 
+{
+    mkdir -p device/xiaomi/sapphire/prebuilt/auxio
+    
+    wget -q --show-progress -O device/xiaomi/sapphire/prebuilt/auxio/Auxio.apk \
+        "https://f-droid.org/repo/org.oxycblt.auxio_75.apk" \
+        || { echo -e "${RED}[ERRO] Falha ao baixar Auxio.apk${RESET}"; return 1; }
+    
+    cat > device/xiaomi/sapphire/prebuilt/auxio/Android.bp << 'EOF'
+android_app_import {
+    name: "Auxio",
+    apk: "Auxio.apk",
+    presigned: true,
+    preprocessed: true,
+    product_specific: true,
+    dex_preopt: {
+        enabled: false,
+    },
+    overrides: ["Twelve", "Music", "Eleven"],
+}
+EOF
+    
+    add_to_device_mk "Auxio"
+    
+    echo -e "${GREEN}Auxio instalado com sucesso em device/xiaomi/sapphire/prebuilt/auxio/${RESET}"
+}
+
+
 # Clona o AuroraStore prebuilt e registra os pacotes no device.mk.
 install_aurorastore() {
     echo -e "${CYAN}Cloning AuroraStore prebuilt...${RESET}"
@@ -259,22 +324,6 @@ install_aurorastore() {
 
     add_to_device_mk "AuroraStore"
     add_to_device_mk "AuroraServices"
-}
-
-#####################################
-#----------------------------------#
-# Apps de privacidade a incluir no build
-# Comente qualquer linha para pular aquele app
-#----------------------------------#
-#####################################
-
-# Orquestra a instalação de todos os apps de privacidade prebuilt.
-add_privacy_apps() {
-    clear
-    install_duckduckgo
-    install_thunderbird
-    install_aurorastore
-    print_header "Privacy apps step complete"
 }
 
 # Integra o ViPER4AndroidFX (TogoFire) no device tree do sapphire:
@@ -461,23 +510,25 @@ cat > .repo/local_manifests/microg.xml << EOF
     <project path="vendor/partner_gms" name="android_vendor_partner_gms" remote="lineageos4microg" revision="master" />
 </manifest>
 EOF
-print_header "MicroG manifest created"
+print_header "MicroG manifest created" && clear
 
-clear
 echo -e "${RED}Syncing full repo...${RESET}"
 repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune || error_exit "Repo sync failed"
 print_header "Repo sync success"
 
-echo -e "${RED}Cloning modified packages...${RESET}"
+clone_modified_packages()
+{
+############## Função desabilitada
+echo -e "${YELLOW}Cloning modified packages...${RESET}"
 clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Settings" "lineage-22.2" "packages/apps/Settings"
 clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Updater" "lineage-22.2" "packages/apps/Updater"
 clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_ThemePicker" "lineage-22.2" "packages/apps/ThemePicker"
 clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Trebuchet" "lineage-22.2" "packages/apps/Trebuchet"
 clone_repo "https://github.com/sapphire-sm6225/android_vendor_lineage.git" "lineage-22.2" "vendor/lineage"
-#clone_repo "https://github.com/sapphire-sm6225/android_frameworks_base.git" "lineage-22.2" "frameworks/base"
 print_header "Vendor lineage cloned"
-print_header "Modified packages cloned"
-echo && clear
+print_header "Modified packages cloned" && clear
+}
+
 echo -e "${RED}Cloning HALs for SM6225...${RESET}"
 clone_hal "https://github.com/sapphire-sm6225/android_hardware_qcom-caf_common.git" "hardware/qcom-caf/common" "lineage-22.2"
 clone_hal "https://github.com/sapphire-sm6225/vendor_qcom_opensource_agm.git" "hardware/qcom-caf/sm6225/audio/agm" "lineage-22.2-caf-sm6225"
@@ -488,8 +539,7 @@ clone_hal "https://github.com/sapphire-sm6225/hardware_qcom_display.git" "hardwa
 clone_hal "https://github.com/sapphire-sm6225/hardware_qcom_media.git" "hardware/qcom-caf/sm6225/media" "lineage-22.0-caf-sm6225"
 clone_hal "https://github.com/sapphire-sm6225/hardware_qcom_audio.git" "hardware/qcom-caf/sm6225/audio/primary-hal" "lineage-22.0-caf-sm6225"
 clone_hal "https://github.com/sapphire-sm6225/device_qcom_sepolicy_vndr.git" "device/qcom/sepolicy_vndr/sm6225" "lineage-22.0-caf-sm6225"
-print_header "HALs cloned"
-clear
+print_header "HALs cloned" && clear
 
 # Instala o script de upload do GoFile e cria o alias "gofile" no bashrc.
 gofile_install(){
@@ -553,33 +603,47 @@ rgapps() {
     print_header "GApps disable pass complete"
 }; rgapps
 
-clear
-# integrar_viperfx
+#####################################
+#----------------------------------#
+# Coisas que voce não precisa saber
+#----------------------------------#
 patch_signature_spoofing
-patch_version_mk
-echo
-add_privacy_apps
+patch_version_mk; clear
+install_titanium
+install_thunderbird
+install_aurorastore
+install_davx5
+gofile_install; clear
 
-clear
-echo -e "${CYAN}Setting up build environment...${RESET}"
+# ========================================
+# Build Environment Setup
+# ========================================
+echo -e "${RED}Setting up build environment...${RESET}"
 source build/envsetup.sh
-export BUILD_USERNAME=WhoFoss
-export BUILD_HOSTNAME=los22
+export BUILD_USERNAME=LineageOS-22.2-MicroG
+export BUILD_HOSTNAME=WhoFoss
 export SKIP_ABI_CHECKS=true
 export WITH_GMS=true
 mkdir -p out/target/product/sapphire/obj/KERNEL_OBJ/usr
-print_header "Build environment ready"
+print_header "Build environment ready"; clear
 
-clear
-echo -e "${RED}Starting build...${RESET}"
-brunch sapphire user || error_exit "Brunch failed"
+# ========================================
+# Build
+# Start ROM compilation
+# ========================================
+echo -e "${YELLOW}Starting build...${RESET}"
+ brunch sapphire user || error_exit "Brunch failed"
 
+# ========================================
+# ROM Upload to GoFile
+# Find, checksum, and upload the latest ROM
+# ========================================
 # Localiza o ROM mais recente, gera o SHA256 e envia para o GoFile
 # (usando o script local se existir, com fallback via download remoto).
 upload(){
     # Upload ROM to GoFile
     BUILD_DIR="out/target/product/sapphire"
-    GOFILE_SCRIPT="${HOME}/LineageOS-MicroG/gofile"
+    GOFILE_SCRIPT="${HOME}/LOSMG/gofile"
     ROM_URL=""
     ROM_SHA256=""
     ROM_SIZE=""
