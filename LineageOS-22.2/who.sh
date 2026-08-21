@@ -539,8 +539,8 @@ gofile_install; clear
 # ========================================
 echo -e "${RED}Setting up build environment...${RESET}"
 source build/envsetup.sh
-export BUILD_USERNAME=WhoFoss
-export BUILD_HOSTNAME=los22
+export BUILD_USERNAME=LineageOS-22.2-MicroG
+export BUILD_HOSTNAME=WhoFoss
 export SKIP_ABI_CHECKS=true
 export WITH_GMS=true
 mkdir -p out/target/product/sapphire/obj/KERNEL_OBJ/usr
