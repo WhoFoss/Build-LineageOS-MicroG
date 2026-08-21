@@ -447,54 +447,37 @@ source ~/.bashrc 2>/dev/null || true
  print_header "gofile installed"
 }
 
-# Desativa GApps stock no lineage_sapphire.mk: comenta o include do gms.mk
-# e derruba as flags do bloco "Gapps config" para false.
-rgapps() 
+# Substitui device/xiaomi/sapphire/lineage_sapphire.mk por uma versao
+rgapps()
 {
     local MK_FILE="device/xiaomi/sapphire/lineage_sapphire.mk"
+    local REMOTE_URL="https://raw.githubusercontent.com/WhoFoss/LOSMG/refs/heads/main/sapphire.mk/lineage_sapphire.mk"
+    local TMP_FILE
 
     if [ ! -f "$MK_FILE" ]; then
         echo "[ERRO] $MK_FILE nao encontrado"
         return 1
     fi
 
-    echo -e "${CYAN}Disabling GApps in $MK_FILE...${RESET}"
+    echo -e "${CYAN}Baixando lineage_sapphire.mk...${RESET}"
 
-    # Comment gms.mk line (idempotent)
-    if grep -q '^-include vendor/gms/products/gms.mk$' "$MK_FILE"; then
-        sed -i 's/^-include vendor\/gms\/products\/gms.mk$/#-include vendor\/gms\/products\/gms.mk/' "$MK_FILE"
-        grep -q '^#-include vendor/gms/products/gms.mk$' "$MK_FILE" \
-            && echo "[OK] gms.mk comentado" \
-            || echo "[ERRO] falha ao comentar gms.mk"
-    elif grep -q '^#-include vendor/gms/products/gms.mk$' "$MK_FILE"; then
-        echo "[AVISO] gms.mk ja estava comentado"
-    else
-        echo "[AVISO] linha de include do gms.mk nao encontrada"
+    TMP_FILE=$(mktemp)
+
+    if ! curl -fsSL -o "$TMP_FILE" "$REMOTE_URL"; then
+        echo "[ERRO] Falha ao baixar $REMOTE_URL"
+        rm -f "$TMP_FILE"
+        return 1
     fi
 
-    # Flags do bloco "# Gapps config" a desativar
-    local flags=(
-        "TARGET_SUPPORTS_GOOGLE_RECORDER"
-        "TARGET_INCLUDE_STOCK_ARCORE"
-        "TARGET_INCLUDE_GOOGLE_COMMS"
-        "TARGET_INCLUDE_PIXEL_LAUNCHER"
-        "TARGET_INCLUDE_LIVE_WALLPAPERS"
-    )
+    if [ ! -s "$TMP_FILE" ]; then
+        echo "[ERRO] Arquivo baixado esta vazio"
+        rm -f "$TMP_FILE"
+        return 1
+    fi
 
-    local flag
-    for flag in "${flags[@]}"; do
-        if grep -q "^${flag} := true$" "$MK_FILE"; then
-            sed -i "s/^${flag} := true$/${flag} := false/" "$MK_FILE"
-            grep -q "^${flag} := false$" "$MK_FILE" \
-                && echo "[OK] ${flag} := false" \
-                || echo "[ERRO] falha ao ajustar ${flag}"
-        elif grep -q "^${flag} := false$" "$MK_FILE"; then
-            echo "[AVISO] ${flag} ja estava false"
-        else
-            echo "[AVISO] ${flag} nao encontrada em $MK_FILE"
-        fi
-    done
+    mv -f "$TMP_FILE" "$MK_FILE"
 
+    echo "[OK] $MK_FILE substituido com sucesso"
     print_header "GApps disable pass complete"
 }; rgapps
 
