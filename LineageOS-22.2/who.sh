@@ -450,6 +450,7 @@ source ~/.bashrc 2>/dev/null || true
 # Substitui device/xiaomi/sapphire/lineage_sapphire.mk por uma versao
 rgapps()
 {
+clear
     local MK_FILE="device/xiaomi/sapphire/lineage_sapphire.mk"
     local REMOTE_URL="https://raw.githubusercontent.com/WhoFoss/LOSMG/refs/heads/main/sapphire.mk/lineage_sapphire.mk"
     local TMP_FILE
