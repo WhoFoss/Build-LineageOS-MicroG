@@ -87,12 +87,7 @@ cleanup_repos()
 {
     echo -e "${YELLOW}Performing cleanup...${RESET}"
     rm -rf .repo/local_manifests/
-    #rm -rf packages/apps/Trebuchet #Desativado
-    #rm -rf packages/apps/Updater #Desativado
-    #rm -rf packages/apps/Settings #Desativado
     rm -rf hardware/qcom-caf/common
-    #rm -rf packages/apps/ThemePicker #Desativado
-    #rm -rf vendor/lineage #Desativado
     print_header "Cleanup completed"
 }
 
@@ -254,7 +249,6 @@ android_app_import {
     },
 }
 EOF
-
     print_header "DAVx5 prebuilt baixado para $target_dir"
     add_to_device_mk "DAVx5"
 }
@@ -425,23 +419,6 @@ repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --optimiz
 print_header "Repo sync success"
 
 # ========================================
-# Modified Packages
-# Clone custom packages and vendor repositories
-# ========================================
-clone_modified_packages()
-{
-############## Função desabilitada
-echo -e "${YELLOW}Cloning modified packages...${RESET}"
-clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Settings" "lineage-22.2" "packages/apps/Settings"
-clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Updater" "lineage-22.2" "packages/apps/Updater"
-clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_ThemePicker" "lineage-22.2" "packages/apps/ThemePicker"
-clone_repo "https://github.com/sapphire-sm6225/android_packages_apps_Trebuchet" "lineage-22.2" "packages/apps/Trebuchet"
-clone_repo "https://github.com/sapphire-sm6225/android_vendor_lineage.git" "lineage-22.2" "vendor/lineage"
-print_header "Vendor lineage cloned"
-print_header "Modified packages cloned" && clear
-}
-
-# ========================================
 # Qualcomm HALs
 # Clone the required SM6225 hardware components
 # ========================================
@@ -530,7 +507,7 @@ patch_version_mk; clear
 install_titanium
 # install_thunderbird
 install_aurorastore
-# install_davx5
+install_davx5
 gofile_install; clear
 
 
@@ -550,15 +527,15 @@ print_header "Build environment ready"; clear
 # Build
 # Start ROM compilation
 # ========================================
-echo -e "${YELLOW}Starting build...${RESET}"
+ echo -e "${YELLOW}Starting build...${RESET}"
  brunch sapphire user || error_exit "Brunch failed"
 
 # ========================================
 # ROM Upload to GoFile
 # Find, checksum, and upload the latest ROM
 # ========================================
-# Localiza o ROM mais recente, gera o SHA256 e envia para o GoFile
-# (usando o script local se existir, com fallback via download remoto).
+# Localiza a ROM mais recente, gera o SHA256 e envia para o GoFile
+# (usando o script local se existir)
 upload(){
     # Upload ROM to GoFile
     BUILD_DIR="out/target/product/sapphire"
