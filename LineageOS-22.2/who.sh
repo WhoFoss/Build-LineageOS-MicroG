@@ -465,13 +465,13 @@ rgapps()
 
     if ! curl -fsSL -o "$TMP_FILE" "$REMOTE_URL"; then
         echo "[ERRO] Falha ao baixar $REMOTE_URL"
-        rm -f "$TMP_FILE"
+        rm -rf "$TMP_FILE"
         return 1
     fi
 
     if [ ! -s "$TMP_FILE" ]; then
         echo "[ERRO] Arquivo baixado esta vazio"
-        rm -f "$TMP_FILE"
+        rm -rf "$TMP_FILE"
         return 1
     fi
 
