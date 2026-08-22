@@ -397,18 +397,32 @@ clone_repo "https://github.com/saroj-nokia/local_manifests_sapphire" "sapphire15
 
 
 # ========================================
-# MicroG Manifest
-# Add the LineageOS for microG repository manifest
+# MG Manifest
+# Baixa o manifest do MicroG do repositorio remoto
 # ========================================
-echo -e "${YELLOW}Creating MicroG manifest...${RESET}"
-cat > .repo/local_manifests/microg.xml << EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <remote name="lineageos4microg" fetch="https://github.com/lineageos4microg/" />
-    <project path="vendor/partner_gms" name="android_vendor_partner_gms" remote="lineageos4microg" revision="master" />
-</manifest>
-EOF
-print_header "MicroG manifest created" && clear
+MG-Manifest()
+{
+echo -e "${YELLOW}Baixando MicroG Manifest...${RESET}"
+
+mkdir -p .repo/local_manifests
+
+TMP_FILE=$(mktemp)
+REMOTE_URL="https://raw.githubusercontent.com/WhoFoss/LOSMG/refs/heads/main/MG-MANIFEST/microg.xml"
+
+if ! curl -fsSL -o "$TMP_FILE" "$REMOTE_URL"; then
+    rm -f "$TMP_FILE"
+    error_exit "Falha ao baixar $REMOTE_URL"
+fi
+
+if [ ! -s "$TMP_FILE" ]; then
+    rm -f "$TMP_FILE"
+    error_exit "Arquivo vazio"
+fi
+
+mv -f "$TMP_FILE" .repo/local_manifests/microg.xml
+
+print_header "MG manifest baixado" && clear
+}; MG-Manifest
 
 # ========================================
 # Repository Synchronization
