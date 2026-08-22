@@ -277,20 +277,19 @@ EOF
 }
 
 ##################################################
-# AuroraStore + AuroraServices
+# AuroraStore
 # --------------------------------------------------
-# Baixa Android.mk, CleanSpec.mk, privapp-permissions
-# e aurorasetup.sh do proprio repo, depois roda o
-# aurorasetup.sh para baixar os APKs mais recentes.
+# Baixa Android.mk, CleanSpec.mk e aurorasetup.sh do proprio repo, depois roda o
+# aurorasetup.sh para baixar o APK mais recente.
 ##################################################
-install_aurorastore() {
-    echo -e "${CYAN}Baixando AuroraStore/AuroraServices...${RESET}"
+install_aurorastore() 
+{
+    echo -e "${CYAN}Baixando AuroraStore...${RESET}"
 
-    rm -rf vendor/aurora
-    mkdir -p vendor/aurora
+    rm -rf vendor/aurora && mkdir -p vendor/aurora
 
     local BASE_URL="https://raw.githubusercontent.com/WhoFoss/LOSMG/refs/heads/main/AuroraStore"
-    local files=("Android.mk" "CleanSpec.mk" "aurorasetup.sh" "privapp-permissions-AuroraServices.xml")
+    local files=("Android.mk" "CleanSpec.mk" "aurorasetup.sh")
     local f
 
     for f in "${files[@]}"; do
@@ -302,14 +301,12 @@ install_aurorastore() {
 
     chmod +x vendor/aurora/aurorasetup.sh
 
-    echo -e "${CYAN}Rodando aurorasetup.sh (baixa os APKs)...${RESET}"
+    echo -e "${CYAN}Rodando aurorasetup.sh (baixa o APK)...${RESET}"
     bash vendor/aurora/aurorasetup.sh \
         || { echo -e "${RED}[ERRO] aurorasetup.sh falhou${RESET}"; return 1; }
 
-    print_header "AuroraStore prebuilt pronto"
-
+    print_header "AuroraStore pronto"
     add_to_device_mk "AuroraStore"
-    add_to_device_mk "AuroraServices"
 }
 
 # ============================================================
