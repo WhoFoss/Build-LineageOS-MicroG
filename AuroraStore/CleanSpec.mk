@@ -45,8 +45,6 @@
 #$(call add-clean-step, rm -rf $(PRODUCT_OUT)/data/*)
 $(call add-clean-step, rm -rf $(PRODUCT_OUT)/system/app/AuroraStore)
 $(call add-clean-step, rm -rf $(PRODUCT_OUT)/system/priv-app/AuroraStore)
-$(call add-clean-step, rm -rf $(PRODUCT_OUT)/system/priv-app/AuroraServices)
-$(call add-clean-step, rm -f $(PRODUCT_OUT)/system/etc/permissions/privapp-permissions-AuroraServices.xml)
 $(call add-clean-step, rm -f $(PRODUCT_OUT)/system/etc/permissions/privapp-permissions-aurorastore.xml)
 
 # ******************************************************************
