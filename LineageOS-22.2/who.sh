@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #-------------------------------------------------------------------#
 # Autor       : WhoFoss <https://github.com/WhoFoss>
-# Programa    : who.sh
 # DESCRIÇÃO   :
 # Script de build automatizado para compilar o LineageOS 22.2 com MicroG
 # integrado, voltado para o Xiaomi Redmi Note 13 4G (codename: sapphire,
