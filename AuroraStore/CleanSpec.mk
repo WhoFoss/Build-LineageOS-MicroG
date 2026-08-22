@@ -44,8 +44,6 @@
 #$(call add-clean-step, find $(OUT_DIR) -type f -name "IGTalkSession*" -print0 | xargs -0 rm -f)
 #$(call add-clean-step, rm -rf $(PRODUCT_OUT)/data/*)
 $(call add-clean-step, rm -rf $(PRODUCT_OUT)/system/app/AuroraStore)
-$(call add-clean-step, rm -rf $(PRODUCT_OUT)/system/priv-app/AuroraStore)
-$(call add-clean-step, rm -f $(PRODUCT_OUT)/system/etc/permissions/privapp-permissions-aurorastore.xml)
 
 # ******************************************************************
 # NEWER CLEAN STEPS MUST BE AT THE END OF THE LIST ABOVE THIS BANNER
