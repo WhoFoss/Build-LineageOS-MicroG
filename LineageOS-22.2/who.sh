@@ -277,23 +277,40 @@ EOF
 }
 
 ##################################################
-# install_aurorastore - Clona e configura AuroraStore
+# AuroraStore + AuroraServices
+# --------------------------------------------------
+# Baixa Android.mk, CleanSpec.mk, privapp-permissions
+# e aurorasetup.sh do proprio repo, depois roda o
+# aurorasetup.sh para baixar os APKs mais recentes.
 ##################################################
-install_aurorastore() 
-{
-    print_header "Cloning AuroraStore prebuilt..." "$YELLOW"
-    
+install_aurorastore() {
+    echo -e "${CYAN}Baixando AuroraStore/AuroraServices...${RESET}"
+
     rm -rf vendor/aurora
-    git clone --depth 1 -b 12L https://github.com/MSe1969/AuroraStore-prebuilt.git vendor/aurora \
-        || { echo -e "${RED}[ERRO] Falha ao clonar AuroraStore-prebuilt${RESET}"; return 1; }
-    
-    rm -rf vendor/aurora/.git
-    print_header "AuroraStore prebuilt cloned to vendor/aurora" "=" "$GREEN"
+    mkdir -p vendor/aurora
+
+    local BASE_URL="https://raw.githubusercontent.com/WhoFoss/LOSMG/refs/heads/main/AuroraStore"
+    local files=("Android.mk" "CleanSpec.mk" "aurorasetup.sh" "privapp-permissions-AuroraServices.xml")
+    local f
+
+    for f in "${files[@]}"; do
+        if ! curl -fsSL -o "vendor/aurora/$f" "$BASE_URL/$f"; then
+            echo -e "${RED}[ERRO] Falha ao baixar $f${RESET}"
+            return 1
+        fi
+    done
+
+    chmod +x vendor/aurora/aurorasetup.sh
+
+    echo -e "${CYAN}Rodando aurorasetup.sh (baixa os APKs)...${RESET}"
+    bash vendor/aurora/aurorasetup.sh \
+        || { echo -e "${RED}[ERRO] aurorasetup.sh falhou${RESET}"; return 1; }
+
+    print_header "AuroraStore prebuilt pronto"
 
     add_to_device_mk "AuroraStore"
     add_to_device_mk "AuroraServices"
 }
-
 
 # ============================================================
 # Auxio Music Player
