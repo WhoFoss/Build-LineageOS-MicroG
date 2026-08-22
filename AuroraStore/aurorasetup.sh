@@ -14,7 +14,9 @@ download_apk() {
         echo "$destination_apk exists: not downloading"
     else
         echo "downloading $source_apk to $destination_apk"
-        curl -fL --output "$destination_apk" "$source_apk"
+        curl -fL \
+            -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+            --output "$destination_apk" "$source_apk"
     fi
 }
 
