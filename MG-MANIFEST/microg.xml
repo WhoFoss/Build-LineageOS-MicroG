@@ -3,4 +3,3 @@
     <remote name="lineageos4microg" fetch="https://github.com/lineageos4microg/" />
     <project path="vendor/partner_gms" name="android_vendor_partner_gms" remote="lineageos4microg" revision="master" />
 </manifest>
-EOF
