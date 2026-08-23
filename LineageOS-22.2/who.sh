@@ -539,7 +539,7 @@ print_header "Build environment ready"; clear
 # Start ROM compilation
 # ========================================
  echo -e "${YELLOW}Starting build...${RESET}"
- brunch sapphire user || error_exit "Brunch failed"
+# brunch sapphire user || error_exit "Brunch failed"
 
 # ========================================
 # ROM Upload to GoFile
@@ -612,4 +612,4 @@ upload(){
     fi
 
     [ -n "$ROM_URL" ] && return 0 || return 1
-}; upload
+}
