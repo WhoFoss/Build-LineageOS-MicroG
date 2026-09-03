@@ -442,7 +442,7 @@ print_header "MG manifest baixado" && clear
 # Download and synchronize the complete source tree
 # ========================================
 echo -e "${YELLOW}Syncing full repo...${RESET}"
-repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune || error_exit "Repo sync failed"
+repo sync -c --force-sync --optimized-fetch --no-tags --no-clone-bundle --prune -j14
 print_header "Repo sync success"
 
 # ========================================
@@ -516,7 +516,7 @@ clear
 patch_signature_spoofing
 patch_version_mk; clear
 install_titanium
-# install_thunderbird
+install_thunderbird
 install_aurorastore
 install_davx5
 gofile_install; clear
